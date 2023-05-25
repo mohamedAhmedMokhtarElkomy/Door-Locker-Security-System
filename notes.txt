@@ -1,0 +1,15 @@
+used internal pull up instead of resistors because proteus gone crazy when press button
+
+
+
+
+
+
+why in keypad 4*4 write pins as an output at each read?
+
+
+
+
+
+
+add backspace

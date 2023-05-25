@@ -42,6 +42,7 @@
  * Description :
  * Get the Keypad pressed button
  */
+//void KEYPAD_init(void);
 uint8 KEYPAD_getPressedKey(void);
 
 #endif /* KEYPAD_H_ */
