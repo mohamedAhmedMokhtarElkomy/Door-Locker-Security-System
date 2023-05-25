@@ -50,6 +50,7 @@ void readAndSendPassword(){
 void main(void){
 
 	setup();
+	UART_rcvCharacter();
 
 
 	do{
@@ -67,6 +68,7 @@ void main(void){
 
 		readAndSendPassword();
 
+		uint8 result = UART_rcvCharacter();
 		/***************************************************/
 		LCD_clearScreen();
 		LCD_displayString("Different");

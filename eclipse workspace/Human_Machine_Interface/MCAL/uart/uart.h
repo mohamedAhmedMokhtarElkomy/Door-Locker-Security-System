@@ -30,6 +30,7 @@ extern volatile uint8 g_uartRcvData;
 void UART_init();
 void UART_sendCharacter(uint8 data);
 void UART_sendArray(uint8 *str, uint8 str_size);
+uint8 UART_rcvCharacter();
 
 
 #endif /* UART_H_ */
