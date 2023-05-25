@@ -49,11 +49,16 @@ void UART_init(){
 	UBRRL = ubrr_value;
 }
 
-void UART_sendByte(uint8 data){
+void UART_sendCharacter(uint8 data){
 	while( BIT_IS_CLEAR(UCSRA, UDRE) ){} /* wait if previous byte still sending */
 	UDR = data;
 }
 
-void UART_sendString(const char *str){
-	while( BIT_IS_CLEAR(UCSRA, UDRE) ){} /* wait if previous byte still sending */
+void UART_sendArray(uint8 *str, uint8 str_size){
+
+	for(int i = 0; i < str_size; i++){
+		while( BIT_IS_CLEAR(UCSRA, UDRE) ){} /* wait if previous byte still sending */
+		UDR = str[i];
+	}
+
 }

@@ -28,8 +28,8 @@ extern volatile uint8 g_uartRcvData;
  *                      Functions Prototypes                                   *
  *******************************************************************************/
 void UART_init();
-void UART_sendByte(uint8 data);
-void UART_sendString(const char *str);
+void UART_sendCharacter(uint8 data);
+void UART_sendArray(uint8 *str, uint8 str_size);
 
 
 #endif /* UART_H_ */

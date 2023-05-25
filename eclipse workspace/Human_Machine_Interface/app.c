@@ -13,6 +13,9 @@
 #include "avr/io.h"
 #include <string.h>
 
+
+#define PASSWORD_SIZE 6
+
 //#define F_CPU 8000000UL
 
 void setup(){
@@ -21,65 +24,50 @@ void setup(){
 	UART_init();
 }
 
-void createPassword();
+void readAndSendPassword();
+void readAndSendPassword(){
 
+	uint8 password[PASSWORD_SIZE] = {'=', '=', '=', '=', '=', '='};			/* password that store 5 chars and \0 */
+	uint8 password_index = 0;
+
+	for(;;){
+		password[password_index] = KEYPAD_getPressedKey();
+		_delay_ms(250);/* it needs at least 200ms to work properly*/
+
+		if(password[password_index] == '=' ){ /* if user pressed Enter */
+			password[password_index] = '\0';
+			break;
+		}
+		else if(password_index <= 4){ /* index 4 indicates that 5 numbers have been entered*/
+			LCD_displayCharacter('*');
+			password_index++;
+		}
+	}
+
+	UART_sendArray(password, PASSWORD_SIZE); /*TODO UART should not used in app layer*/
+
+}
 void main(void){
-
-
-
-	uint8 password[6];			/* password that store 5 chars and \0 */
 
 	setup();
 
 
-
 	do{
-		uint8 password_index = 0;
 
 		LCD_displayString("plz enter pass: ");
 		LCD_moveCursor(1,0);
 
-		for(;;){
-			password[password_index] = KEYPAD_getPressedKey();
-			_delay_ms(250);/* it needs at least 200ms to work properly*/
+		readAndSendPassword();
 
-			if(password[password_index] == '=' ){ /* if user pressed Enter */
-				password[password_index] = '\0';
-				break;
-			}
-			else if(password_index <= 4){ /* index 4 indicates that 5 numbers have been entered*/
-				LCD_displayCharacter(password[password_index]); /*TODO replace it with '*' */
-				password_index++;
-			}
-		}
 
 		LCD_clearScreen();
 		LCD_displayString("plz re-enter the");
 		LCD_moveCursor(1,0);
 		LCD_displayString("same pass:");
 
-		password_index = 0;
-		uint8 confirmation_password[6];
+		readAndSendPassword();
 
-		for(;;){
-
-			confirmation_password[password_index] = KEYPAD_getPressedKey();
-			_delay_ms(250);/* it needs at least 200ms to work properly*/
-
-			if(confirmation_password[password_index] == '=' ){ /* if user pressed Enter */
-				confirmation_password[password_index] = '\0';
-				break;
-			}
-			else if(password_index <= 4){ /* index 4 indicates that 5 numbers have been entered*/
-				LCD_displayCharacter(confirmation_password[password_index]); /*TODO replace it with '*' */
-				password_index++;
-			}
-		}
-
-		if(strcmp(password, confirmation_password) == 0){
-			break;
-		}
-
+		/***************************************************/
 		LCD_clearScreen();
 		LCD_displayString("Different");
 		LCD_moveCursor(1,0);

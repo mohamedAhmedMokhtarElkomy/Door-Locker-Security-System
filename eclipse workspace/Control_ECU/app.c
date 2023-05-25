@@ -5,7 +5,19 @@
  *      Author: mohah
  */
 
+#include "MCAL/uart/uart.h"
+
+
+#include <string.h>
+#include "avr/io.h"
+void setup(){
+	UART_init();
+}
+
 void main(void){
+
+
+//	if(strcmp(password, confirmation_password) == 0){return;}
 
 }
 
