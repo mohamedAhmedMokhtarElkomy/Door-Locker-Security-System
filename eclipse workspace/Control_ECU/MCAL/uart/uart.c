@@ -62,3 +62,9 @@ void UART_sendArray(uint8 *str, uint8 str_size){
 	}
 
 }
+
+uint8 UART_rcvCharacter(){
+	while( BIT_IS_CLEAR(UCSRA, RXC) ){}
+	return UDR;
+}
+

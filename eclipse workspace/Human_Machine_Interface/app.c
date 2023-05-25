@@ -49,9 +49,10 @@ void readAndSendPassword(){
 }
 void main(void){
 
+	uint8 response = 'w';
 	setup();
-	UART_rcvCharacter();
-
+//	UART_rcvCharacter();
+//	LCD_displayCharacter(g_uartRcvData);
 
 	do{
 
@@ -68,29 +69,39 @@ void main(void){
 
 		readAndSendPassword();
 
-		uint8 result = UART_rcvCharacter();
-		/***************************************************/
 		LCD_clearScreen();
-		LCD_displayString("Different");
-		LCD_moveCursor(1,0);
-		LCD_displayString("passwords");
+
+		LCD_displayString("checking password");
+		response = UART_rcvCharacter();
+		LCD_clearScreen();
+
+
+
+		if(response == 't')
+		{
+
+			LCD_displayString("Password Saved");
+			LCD_moveCursor(1,0);
+			LCD_displayString("Successfully");
+		}
+		else if(response == 'f'){
+
+			LCD_displayString("Different");
+			LCD_moveCursor(1,0);
+			LCD_displayString("passwords");
+		}
+		/**************************************************/
 
 
 		_delay_ms(3000);
 		LCD_clearScreen();
 
-	}while(1);
+	}while(response == 'f');
 
 	LCD_clearScreen();
 	LCD_displayString("all is good");
 	_delay_ms(3000);
 
-//	for(;;){
-//		key = KEYPAD_getPressedKey();
-//		LCD_displayCharacter(key);
-//		_delay_ms(500); /* it needs at least 200ms to work properly*/
-//		UART_sendByte(key);
-//	}
 
 }
 
