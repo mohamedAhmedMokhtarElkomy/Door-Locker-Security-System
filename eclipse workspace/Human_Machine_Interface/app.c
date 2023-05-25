@@ -25,6 +25,107 @@ void setup(){
 }
 
 void readAndSendPassword();
+
+void main(void){
+
+	uint8 response = 'w';
+	setup();
+
+	LCD_displayString("System loading...");
+	LCD_moveCursor(1,0);
+
+	_delay_ms(1000); /* delay 1 sec to be sure that both ECU MCU is running */
+
+restart:
+	LCD_clearScreen();
+
+	do{
+		UART_sendCharacter('p');
+		LCD_displayString("plz enter pass: ");
+		LCD_moveCursor(1,0);
+		readAndSendPassword();
+		LCD_clearScreen();
+
+		LCD_displayString("plz re-enter the");
+		LCD_moveCursor(1,0);
+		LCD_displayString("same pass:");
+		readAndSendPassword();
+		LCD_clearScreen();
+
+		LCD_displayString("checking password");
+		response = UART_rcvCharacter();
+		LCD_clearScreen();
+
+
+
+		if(response == 't')
+		{
+
+			LCD_displayString("Password Saved");
+			LCD_moveCursor(1,0);
+			LCD_displayString("Successfully");
+		}
+		else if(response == 'f'){
+
+			LCD_displayString("Different");
+			LCD_moveCursor(1,0);
+			LCD_displayString("passwords");
+		}
+
+		_delay_ms(2000);
+		LCD_clearScreen();
+
+	}while(response == 'f');
+
+
+screen:
+
+	LCD_clearScreen();
+	LCD_displayString("+ : open door");
+	LCD_moveCursor(1,0);
+	LCD_displayString("- : change pass");
+
+	uint8 key = KEYPAD_getPressedKey();
+	_delay_ms(250);/* it needs at least 200ms to work properly*/
+	LCD_clearScreen();
+
+	if( key == '+' ){
+		for(int i = 1; i <= 3; i++){
+			UART_sendCharacter('+');
+			LCD_displayString("plz enter pass: ");
+			LCD_moveCursor(1,0);
+			readAndSendPassword();
+			LCD_clearScreen();
+
+			response = UART_rcvCharacter();
+			if(response == 't'){
+				LCD_displayString("Motor is moving");
+				response = UART_rcvCharacter();
+				LCD_clearScreen();
+				break;
+			}
+		}
+
+		if(response == 'f')
+			goto screen;
+	}else if( key == '-' ){
+		for(int i = 1; i <=3; i++){
+			UART_sendCharacter('-');
+			LCD_displayString("-)plz enter pass: ");
+			LCD_moveCursor(1,0);
+			readAndSendPassword();
+			response = UART_rcvCharacter();
+			if(response == 't')
+				break;
+			LCD_clearScreen();
+		}
+		if(response == 'f')
+			goto screen;
+		goto restart;
+	}
+}
+
+
 void readAndSendPassword(){
 
 	uint8 password[PASSWORD_SIZE] = {'=', '=', '=', '=', '=', '='};			/* password that store 5 chars and \0 */
@@ -47,61 +148,3 @@ void readAndSendPassword(){
 	UART_sendArray(password, PASSWORD_SIZE); /*TODO UART should not used in app layer*/
 
 }
-void main(void){
-
-	uint8 response = 'w';
-	setup();
-//	UART_rcvCharacter();
-//	LCD_displayCharacter(g_uartRcvData);
-
-	do{
-
-		LCD_displayString("plz enter pass: ");
-		LCD_moveCursor(1,0);
-
-		readAndSendPassword();
-
-
-		LCD_clearScreen();
-		LCD_displayString("plz re-enter the");
-		LCD_moveCursor(1,0);
-		LCD_displayString("same pass:");
-
-		readAndSendPassword();
-
-		LCD_clearScreen();
-
-		LCD_displayString("checking password");
-		response = UART_rcvCharacter();
-		LCD_clearScreen();
-
-
-
-		if(response == 't')
-		{
-
-			LCD_displayString("Password Saved");
-			LCD_moveCursor(1,0);
-			LCD_displayString("Successfully");
-		}
-		else if(response == 'f'){
-
-			LCD_displayString("Different");
-			LCD_moveCursor(1,0);
-			LCD_displayString("passwords");
-		}
-		/**************************************************/
-
-
-		_delay_ms(3000);
-		LCD_clearScreen();
-
-	}while(response == 'f');
-
-	LCD_clearScreen();
-	LCD_displayString("all is good");
-	_delay_ms(3000);
-
-
-}
-

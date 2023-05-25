@@ -16,6 +16,7 @@
 #include "../../std_types.h"
 #include "../../common_macros.h"
 #include "avr/io.h"
+#include <util/delay.h>
 
 /*******************************************************************************
  *                         Types Declaration                                   *

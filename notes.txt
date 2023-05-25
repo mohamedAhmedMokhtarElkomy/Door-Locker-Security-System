@@ -13,3 +13,5 @@ why in keypad 4*4 write pins as an output at each read?
 
 
 add backspace
+
+sending 'p' skip the '-' should check password for first time

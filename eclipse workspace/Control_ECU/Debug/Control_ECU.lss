@@ -3,13 +3,13 @@ Control_ECU.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000a78  00000000  00000000  00000074  2**1
+  0 .text         00000b4e  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000002  00800060  00000a78  00000aec  2**0
+  1 .data         00000008  00800060  00000b4e  00000bc2  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .stab         000010d4  00000000  00000000  00000af0  2**2
+  2 .stab         0000120c  00000000  00000000  00000bcc  2**2
                   CONTENTS, READONLY, DEBUGGING
-  3 .stabstr      00000c35  00000000  00000000  00001bc4  2**0
+  3 .stabstr      00000c8d  00000000  00000000  00001dd8  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -49,8 +49,8 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	e8 e7       	ldi	r30, 0x78	; 120
-  68:	fa e0       	ldi	r31, 0x0A	; 10
+  66:	ee e4       	ldi	r30, 0x4E	; 78
+  68:	fb e0       	ldi	r31, 0x0B	; 11
   6a:	02 c0       	rjmp	.+4      	; 0x70 <.do_copy_data_start>
 
 0000006c <.do_copy_data_loop>:
@@ -58,11 +58,11 @@ Disassembly of section .text:
   6e:	0d 92       	st	X+, r0
 
 00000070 <.do_copy_data_start>:
-  70:	a2 36       	cpi	r26, 0x62	; 98
+  70:	a8 36       	cpi	r26, 0x68	; 104
   72:	b1 07       	cpc	r27, r17
   74:	d9 f7       	brne	.-10     	; 0x6c <.do_copy_data_loop>
-  76:	0e 94 0b 05 	call	0xa16	; 0xa16 <main>
-  7a:	0c 94 3a 05 	jmp	0xa74	; 0xa74 <_exit>
+  76:	0e 94 7f 05 	call	0xafe	; 0xafe <main>
+  7a:	0c 94 a5 05 	jmp	0xb4a	; 0xb4a <_exit>
 
 0000007e <__bad_interrupt>:
   7e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -1579,10 +1579,10 @@ uint8 GPIO_readPort(uint8 port_num){
  98e:	08 95       	ret
 
 00000990 <setup>:
-#include <util/delay.h>
 
 
 #define PASSWORD_SIZE 6
+
 
 void setup(){
  990:	df 93       	push	r29
@@ -1679,9 +1679,9 @@ void rcvPassword(uint8* str){
  a12:	0f 91       	pop	r16
  a14:	08 95       	ret
 
-00000a16 <main>:
+00000a16 <changePass>:
 
-void main(void){
+void changePass(){
  a16:	df 93       	push	r29
  a18:	cf 93       	push	r28
  a1a:	cd b7       	in	r28, 0x3d	; 61
@@ -1693,57 +1693,184 @@ void main(void){
  a26:	0f be       	out	0x3f, r0	; 63
  a28:	cd bf       	out	0x3d, r28	; 61
 
-
-	setup();
- a2a:	0e 94 c8 04 	call	0x990	; 0x990 <setup>
 	uint8 password[6];
 	uint8 rePassword[6];
+	rcvPassword(password);
+ a2a:	ce 01       	movw	r24, r28
+ a2c:	01 96       	adiw	r24, 0x01	; 1
+ a2e:	0e 94 d1 04 	call	0x9a2	; 0x9a2 <rcvPassword>
+	rcvPassword(rePassword);
+ a32:	ce 01       	movw	r24, r28
+ a34:	07 96       	adiw	r24, 0x07	; 7
+ a36:	0e 94 d1 04 	call	0x9a2	; 0x9a2 <rcvPassword>
 
 
-	for(;;){
-		rcvPassword(password);
- a2e:	ce 01       	movw	r24, r28
- a30:	01 96       	adiw	r24, 0x01	; 1
- a32:	0e 94 d1 04 	call	0x9a2	; 0x9a2 <rcvPassword>
-		rcvPassword(rePassword);
- a36:	ce 01       	movw	r24, r28
- a38:	07 96       	adiw	r24, 0x07	; 7
- a3a:	0e 94 d1 04 	call	0x9a2	; 0x9a2 <rcvPassword>
+	if(strcmp(password, rePassword) == 0)
+ a3a:	9e 01       	movw	r18, r28
+ a3c:	29 5f       	subi	r18, 0xF9	; 249
+ a3e:	3f 4f       	sbci	r19, 0xFF	; 255
+ a40:	ce 01       	movw	r24, r28
+ a42:	01 96       	adiw	r24, 0x01	; 1
+ a44:	b9 01       	movw	r22, r18
+ a46:	0e 94 9c 05 	call	0xb38	; 0xb38 <strcmp>
+ a4a:	00 97       	sbiw	r24, 0x00	; 0
+ a4c:	21 f4       	brne	.+8      	; 0xa56 <changePass+0x40>
+		UART_sendCharacter('t');
+ a4e:	84 e7       	ldi	r24, 0x74	; 116
+ a50:	0e 94 a9 00 	call	0x152	; 0x152 <UART_sendCharacter>
+ a54:	03 c0       	rjmp	.+6      	; 0xa5c <changePass+0x46>
+	else
+		UART_sendCharacter('f');
+ a56:	86 e6       	ldi	r24, 0x66	; 102
+ a58:	0e 94 a9 00 	call	0x152	; 0x152 <UART_sendCharacter>
+}
+ a5c:	2c 96       	adiw	r28, 0x0c	; 12
+ a5e:	0f b6       	in	r0, 0x3f	; 63
+ a60:	f8 94       	cli
+ a62:	de bf       	out	0x3e, r29	; 62
+ a64:	0f be       	out	0x3f, r0	; 63
+ a66:	cd bf       	out	0x3d, r28	; 61
+ a68:	cf 91       	pop	r28
+ a6a:	df 91       	pop	r29
+ a6c:	08 95       	ret
 
+00000a6e <checkPass>:
 
-		if(strcmp(password, rePassword) == 0)
- a3e:	9e 01       	movw	r18, r28
- a40:	29 5f       	subi	r18, 0xF9	; 249
- a42:	3f 4f       	sbci	r19, 0xFF	; 255
- a44:	ce 01       	movw	r24, r28
- a46:	01 96       	adiw	r24, 0x01	; 1
- a48:	b9 01       	movw	r22, r18
- a4a:	0e 94 31 05 	call	0xa62	; 0xa62 <strcmp>
- a4e:	00 97       	sbiw	r24, 0x00	; 0
- a50:	21 f4       	brne	.+8      	; 0xa5a <main+0x44>
-			UART_sendCharacter('t');
- a52:	84 e7       	ldi	r24, 0x74	; 116
- a54:	0e 94 a9 00 	call	0x152	; 0x152 <UART_sendCharacter>
- a58:	ea cf       	rjmp	.-44     	; 0xa2e <main+0x18>
-		else
-			UART_sendCharacter('f');
- a5a:	86 e6       	ldi	r24, 0x66	; 102
- a5c:	0e 94 a9 00 	call	0x152	; 0x152 <UART_sendCharacter>
- a60:	e6 cf       	rjmp	.-52     	; 0xa2e <main+0x18>
+void checkPass(){
+ a6e:	df 93       	push	r29
+ a70:	cf 93       	push	r28
+ a72:	cd b7       	in	r28, 0x3d	; 61
+ a74:	de b7       	in	r29, 0x3e	; 62
+ a76:	61 97       	sbiw	r28, 0x11	; 17
+ a78:	0f b6       	in	r0, 0x3f	; 63
+ a7a:	f8 94       	cli
+ a7c:	de bf       	out	0x3e, r29	; 62
+ a7e:	0f be       	out	0x3f, r0	; 63
+ a80:	cd bf       	out	0x3d, r28	; 61
+	uint8 default_pass[6] = {'1', '2', '3', '4', '5', '\0'};
+ a82:	ce 01       	movw	r24, r28
+ a84:	01 96       	adiw	r24, 0x01	; 1
+ a86:	9e 87       	std	Y+14, r25	; 0x0e
+ a88:	8d 87       	std	Y+13, r24	; 0x0d
+ a8a:	e1 e6       	ldi	r30, 0x61	; 97
+ a8c:	f0 e0       	ldi	r31, 0x00	; 0
+ a8e:	f8 8b       	std	Y+16, r31	; 0x10
+ a90:	ef 87       	std	Y+15, r30	; 0x0f
+ a92:	f6 e0       	ldi	r31, 0x06	; 6
+ a94:	f9 8b       	std	Y+17, r31	; 0x11
+ a96:	ef 85       	ldd	r30, Y+15	; 0x0f
+ a98:	f8 89       	ldd	r31, Y+16	; 0x10
+ a9a:	00 80       	ld	r0, Z
+ a9c:	8f 85       	ldd	r24, Y+15	; 0x0f
+ a9e:	98 89       	ldd	r25, Y+16	; 0x10
+ aa0:	01 96       	adiw	r24, 0x01	; 1
+ aa2:	98 8b       	std	Y+16, r25	; 0x10
+ aa4:	8f 87       	std	Y+15, r24	; 0x0f
+ aa6:	ed 85       	ldd	r30, Y+13	; 0x0d
+ aa8:	fe 85       	ldd	r31, Y+14	; 0x0e
+ aaa:	00 82       	st	Z, r0
+ aac:	8d 85       	ldd	r24, Y+13	; 0x0d
+ aae:	9e 85       	ldd	r25, Y+14	; 0x0e
+ ab0:	01 96       	adiw	r24, 0x01	; 1
+ ab2:	9e 87       	std	Y+14, r25	; 0x0e
+ ab4:	8d 87       	std	Y+13, r24	; 0x0d
+ ab6:	99 89       	ldd	r25, Y+17	; 0x11
+ ab8:	91 50       	subi	r25, 0x01	; 1
+ aba:	99 8b       	std	Y+17, r25	; 0x11
+ abc:	e9 89       	ldd	r30, Y+17	; 0x11
+ abe:	ee 23       	and	r30, r30
+ ac0:	51 f7       	brne	.-44     	; 0xa96 <checkPass+0x28>
+	uint8 password[6];
+	rcvPassword(password);
+ ac2:	ce 01       	movw	r24, r28
+ ac4:	07 96       	adiw	r24, 0x07	; 7
+ ac6:	0e 94 d1 04 	call	0x9a2	; 0x9a2 <rcvPassword>
 
-00000a62 <strcmp>:
- a62:	fb 01       	movw	r30, r22
- a64:	dc 01       	movw	r26, r24
- a66:	8d 91       	ld	r24, X+
- a68:	01 90       	ld	r0, Z+
- a6a:	80 19       	sub	r24, r0
- a6c:	01 10       	cpse	r0, r1
- a6e:	d9 f3       	breq	.-10     	; 0xa66 <strcmp+0x4>
- a70:	99 0b       	sbc	r25, r25
- a72:	08 95       	ret
+	if(strcmp(password, default_pass) == 0)
+ aca:	ce 01       	movw	r24, r28
+ acc:	07 96       	adiw	r24, 0x07	; 7
+ ace:	9e 01       	movw	r18, r28
+ ad0:	2f 5f       	subi	r18, 0xFF	; 255
+ ad2:	3f 4f       	sbci	r19, 0xFF	; 255
+ ad4:	b9 01       	movw	r22, r18
+ ad6:	0e 94 9c 05 	call	0xb38	; 0xb38 <strcmp>
+ ada:	00 97       	sbiw	r24, 0x00	; 0
+ adc:	21 f4       	brne	.+8      	; 0xae6 <checkPass+0x78>
+		UART_sendCharacter('t');
+ ade:	84 e7       	ldi	r24, 0x74	; 116
+ ae0:	0e 94 a9 00 	call	0x152	; 0x152 <UART_sendCharacter>
+ ae4:	03 c0       	rjmp	.+6      	; 0xaec <checkPass+0x7e>
+	else
+		UART_sendCharacter('f');
+ ae6:	86 e6       	ldi	r24, 0x66	; 102
+ ae8:	0e 94 a9 00 	call	0x152	; 0x152 <UART_sendCharacter>
+}
+ aec:	61 96       	adiw	r28, 0x11	; 17
+ aee:	0f b6       	in	r0, 0x3f	; 63
+ af0:	f8 94       	cli
+ af2:	de bf       	out	0x3e, r29	; 62
+ af4:	0f be       	out	0x3f, r0	; 63
+ af6:	cd bf       	out	0x3d, r28	; 61
+ af8:	cf 91       	pop	r28
+ afa:	df 91       	pop	r29
+ afc:	08 95       	ret
 
-00000a74 <_exit>:
- a74:	f8 94       	cli
+00000afe <main>:
 
-00000a76 <__stop_program>:
- a76:	ff cf       	rjmp	.-2      	; 0xa76 <__stop_program>
+void main(void){
+ afe:	df 93       	push	r29
+ b00:	cf 93       	push	r28
+ b02:	0f 92       	push	r0
+ b04:	cd b7       	in	r28, 0x3d	; 61
+ b06:	de b7       	in	r29, 0x3e	; 62
+
+	uint8 response = 0;
+ b08:	19 82       	std	Y+1, r1	; 0x01
+
+	setup();
+ b0a:	0e 94 c8 04 	call	0x990	; 0x990 <setup>
+
+	do{
+		response = UART_rcvCharacter();
+ b0e:	0e 94 f6 00 	call	0x1ec	; 0x1ec <UART_rcvCharacter>
+ b12:	89 83       	std	Y+1, r24	; 0x01
+
+		if(response == '+' ){
+ b14:	89 81       	ldd	r24, Y+1	; 0x01
+ b16:	8b 32       	cpi	r24, 0x2B	; 43
+ b18:	19 f4       	brne	.+6      	; 0xb20 <main+0x22>
+			checkPass();
+ b1a:	0e 94 37 05 	call	0xa6e	; 0xa6e <checkPass>
+ b1e:	f7 cf       	rjmp	.-18     	; 0xb0e <main+0x10>
+		}	//TODO move motor
+		else if(response == '-')
+ b20:	89 81       	ldd	r24, Y+1	; 0x01
+ b22:	8d 32       	cpi	r24, 0x2D	; 45
+ b24:	19 f4       	brne	.+6      	; 0xb2c <main+0x2e>
+			checkPass();
+ b26:	0e 94 37 05 	call	0xa6e	; 0xa6e <checkPass>
+ b2a:	f1 cf       	rjmp	.-30     	; 0xb0e <main+0x10>
+		else if(response == 'p')
+ b2c:	89 81       	ldd	r24, Y+1	; 0x01
+ b2e:	80 37       	cpi	r24, 0x70	; 112
+ b30:	71 f7       	brne	.-36     	; 0xb0e <main+0x10>
+			changePass();
+ b32:	0e 94 0b 05 	call	0xa16	; 0xa16 <changePass>
+ b36:	eb cf       	rjmp	.-42     	; 0xb0e <main+0x10>
+
+00000b38 <strcmp>:
+ b38:	fb 01       	movw	r30, r22
+ b3a:	dc 01       	movw	r26, r24
+ b3c:	8d 91       	ld	r24, X+
+ b3e:	01 90       	ld	r0, Z+
+ b40:	80 19       	sub	r24, r0
+ b42:	01 10       	cpse	r0, r1
+ b44:	d9 f3       	breq	.-10     	; 0xb3c <strcmp+0x4>
+ b46:	99 0b       	sbc	r25, r25
+ b48:	08 95       	ret
+
+00000b4a <_exit>:
+ b4a:	f8 94       	cli
+
+00000b4c <__stop_program>:
+ b4c:	ff cf       	rjmp	.-2      	; 0xb4c <__stop_program>
