@@ -22,8 +22,9 @@ Linker script and memory map
 
 LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5/crtm32.o
 LOAD ./MCAL/uart/uart.o
-LOAD ./MCAL/timer/timer.o
+LOAD ./MCAL/timer0/timer0.o
 LOAD ./MCAL/gpio/gpio.o
+LOAD ./HAL/dc_motor/dcMotor.o
 LOAD ./app.o
 LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
 LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5\libc.a
@@ -119,7 +120,7 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xb4e
+.text           0x00000000      0xca0
  *(.vectors)
  .vectors       0x00000000       0x54 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5/crtm32.o
                 0x00000000                __vectors
@@ -194,8 +195,9 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
                 0x0000007e                __vector_18
                 0x0000007e                __vector_20
  .text          0x00000082        0x0 ./MCAL/uart/uart.o
- .text          0x00000082        0x0 ./MCAL/timer/timer.o
+ .text          0x00000082        0x0 ./MCAL/timer0/timer0.o
  .text          0x00000082        0x0 ./MCAL/gpio/gpio.o
+ .text          0x00000082        0x0 ./HAL/dc_motor/dcMotor.o
  .text          0x00000082        0x0 ./app.o
  .text          0x00000082        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
  .text          0x00000082        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_copy_data.o)
@@ -217,50 +219,68 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
  .text.UART_rcvCharacter
                 0x000001ec       0x1e ./MCAL/uart/uart.o
                 0x000001ec                UART_rcvCharacter
+ .text.TIMER0_init
+                0x0000020a       0x1c ./MCAL/timer0/timer0.o
+                0x0000020a                TIMER0_init
+ .text.TIMER0_start
+                0x00000226        0xe ./MCAL/timer0/timer0.o
+                0x00000226                TIMER0_start
+ .text.TIMER0_stop
+                0x00000234        0xe ./MCAL/timer0/timer0.o
+                0x00000234                TIMER0_stop
+ .text.TIMER0_clear
+                0x00000242        0xe ./MCAL/timer0/timer0.o
+                0x00000242                TIMER0_clear
  .text.GPIO_setupPinDirection
-                0x0000020a      0x1d6 ./MCAL/gpio/gpio.o
-                0x0000020a                GPIO_setupPinDirection
+                0x00000250      0x1d6 ./MCAL/gpio/gpio.o
+                0x00000250                GPIO_setupPinDirection
  .text.GPIO_writePin
-                0x000003e0      0x1d6 ./MCAL/gpio/gpio.o
-                0x000003e0                GPIO_writePin
+                0x00000426      0x1d6 ./MCAL/gpio/gpio.o
+                0x00000426                GPIO_writePin
  .text.GPIO_readPin
-                0x000005b6      0x136 ./MCAL/gpio/gpio.o
-                0x000005b6                GPIO_readPin
+                0x000005fc      0x136 ./MCAL/gpio/gpio.o
+                0x000005fc                GPIO_readPin
  .text.GPIO_togglePin
-                0x000006ec      0x10a ./MCAL/gpio/gpio.o
-                0x000006ec                GPIO_togglePin
+                0x00000732      0x10a ./MCAL/gpio/gpio.o
+                0x00000732                GPIO_togglePin
  .text.GPIO_setupPortDirection
-                0x000007f6       0x88 ./MCAL/gpio/gpio.o
-                0x000007f6                GPIO_setupPortDirection
+                0x0000083c       0x88 ./MCAL/gpio/gpio.o
+                0x0000083c                GPIO_setupPortDirection
  .text.GPIO_writePort
-                0x0000087e       0x88 ./MCAL/gpio/gpio.o
-                0x0000087e                GPIO_writePort
+                0x000008c4       0x88 ./MCAL/gpio/gpio.o
+                0x000008c4                GPIO_writePort
  .text.GPIO_readPort
-                0x00000906       0x8a ./MCAL/gpio/gpio.o
-                0x00000906                GPIO_readPort
- .text.setup    0x00000990       0x12 ./app.o
-                0x00000990                setup
+                0x0000094c       0x8a ./MCAL/gpio/gpio.o
+                0x0000094c                GPIO_readPort
+ .text.DcMotor_init
+                0x000009d6       0x40 ./HAL/dc_motor/dcMotor.o
+                0x000009d6                DcMotor_init
+ .text.DcMotor_rotate
+                0x00000a16       0xcc ./HAL/dc_motor/dcMotor.o
+                0x00000a16                DcMotor_rotate
+ .text.setup    0x00000ae2       0x12 ./app.o
+                0x00000ae2                setup
  .text.rcvPassword
-                0x000009a2       0x74 ./app.o
-                0x000009a2                rcvPassword
+                0x00000af4       0x74 ./app.o
+                0x00000af4                rcvPassword
  .text.changePass
-                0x00000a16       0x58 ./app.o
-                0x00000a16                changePass
+                0x00000b68       0x58 ./app.o
+                0x00000b68                changePass
  .text.checkPass
-                0x00000a6e       0x90 ./app.o
-                0x00000a6e                checkPass
- .text.main     0x00000afe       0x3a ./app.o
-                0x00000afe                main
- .text.libgcc   0x00000b38        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
- .text.libgcc   0x00000b38        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_copy_data.o)
+                0x00000bc0       0x90 ./app.o
+                0x00000bc0                checkPass
+ .text.main     0x00000c50       0x3a ./app.o
+                0x00000c50                main
+ .text.libgcc   0x00000c8a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
+ .text.libgcc   0x00000c8a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_copy_data.o)
  .text.avr-libc
-                0x00000b38       0x12 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5\libc.a(strcmp.o)
-                0x00000b38                strcmp
-                0x00000b4a                . = ALIGN (0x2)
+                0x00000c8a       0x12 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5\libc.a(strcmp.o)
+                0x00000c8a                strcmp
+                0x00000c9c                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000b4a        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
-                0x00000b4a                exit
-                0x00000b4a                _exit
+ .fini9         0x00000c9c        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
+                0x00000c9c                exit
+                0x00000c9c                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -279,17 +299,18 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000b4a        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000c9c        0x4 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000b4e                _etext = .
+                0x00000ca0                _etext = .
 
-.data           0x00800060        0x8 load address 0x00000b4e
+.data           0x00800060        0x8 load address 0x00000ca0
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5/crtm32.o
  .data          0x00800060        0x0 ./MCAL/uart/uart.o
- .data          0x00800060        0x0 ./MCAL/timer/timer.o
+ .data          0x00800060        0x0 ./MCAL/timer0/timer0.o
  .data          0x00800060        0x0 ./MCAL/gpio/gpio.o
+ .data          0x00800060        0x0 ./HAL/dc_motor/dcMotor.o
  .data          0x00800060        0x0 ./app.o
  .data          0x00800060        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
  .data          0x00800060        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_copy_data.o)
@@ -313,8 +334,9 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
  *(.bss)
  .bss           0x00800068        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/../../../../avr/lib/avr5/crtm32.o
  .bss           0x00800068        0x0 ./MCAL/uart/uart.o
- .bss           0x00800068        0x0 ./MCAL/timer/timer.o
+ .bss           0x00800068        0x0 ./MCAL/timer0/timer0.o
  .bss           0x00800068        0x0 ./MCAL/gpio/gpio.o
+ .bss           0x00800068        0x0 ./HAL/dc_motor/dcMotor.o
  .bss           0x00800068        0x0 ./app.o
  .bss           0x00800068        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_exit.o)
  .bss           0x00800068        0x0 c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a(_copy_data.o)
@@ -322,8 +344,8 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
  *(.bss*)
  *(COMMON)
                 0x00800068                PROVIDE (__bss_end, .)
-                0x00000b4e                __data_load_start = LOADADDR (.data)
-                0x00000b56                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000ca0                __data_load_start = LOADADDR (.data)
+                0x00000ca8                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x00800068        0x0
                 0x00800068                PROVIDE (__noinit_start, .)
@@ -348,19 +370,21 @@ LOAD c:/winavr-20100110/bin/../lib/gcc/avr/4.3.3/avr5\libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x00000000     0x120c
+.stab           0x00000000     0x1764
  *(.stab)
  .stab          0x00000000      0x5d0 ./MCAL/uart/uart.o
- .stab          0x000005d0       0xd8 ./MCAL/timer/timer.o
-                                 0xe4 (size before relaxing)
- .stab          0x000006a8      0x768 ./MCAL/gpio/gpio.o
+ .stab          0x000005d0      0x2d0 ./MCAL/timer0/timer0.o
+                                0x48c (size before relaxing)
+ .stab          0x000008a0      0x768 ./MCAL/gpio/gpio.o
                                 0x924 (size before relaxing)
- .stab          0x00000e10      0x3fc ./app.o
+ .stab          0x00001008      0x360 ./HAL/dc_motor/dcMotor.o
+                                0x36c (size before relaxing)
+ .stab          0x00001368      0x3fc ./app.o
                                 0x684 (size before relaxing)
 
-.stabstr        0x00000000      0xc8d
+.stabstr        0x00000000     0x12ca
  *(.stabstr)
- .stabstr       0x00000000      0xc8d ./MCAL/uart/uart.o
+ .stabstr       0x00000000     0x12ca ./MCAL/uart/uart.o
 
 .stab.excl
  *(.stab.excl)
