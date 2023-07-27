@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include MCAL/uart/subdir.mk
 -include MCAL/timer0/subdir.mk
+-include MCAL/i2c/subdir.mk
 -include MCAL/gpio/subdir.mk
 -include HAL/dc_motor/subdir.mk
 -include subdir.mk

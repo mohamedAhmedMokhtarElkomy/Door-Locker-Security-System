@@ -28,7 +28,7 @@ typedef enum{
 typedef struct
 {
 	E_Timer0Mode mode;
-	ADC_prescaler prescaler;
+//	ADC_prescaler prescaler;
 
 }TIMER0_configType;
 

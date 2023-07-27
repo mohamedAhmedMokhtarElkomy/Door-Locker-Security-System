@@ -21,6 +21,7 @@ C_DEPS :=
 SUBDIRS := \
 HAL/dc_motor \
 MCAL/gpio \
+MCAL/i2c \
 MCAL/timer0 \
 MCAL/uart \
 . \

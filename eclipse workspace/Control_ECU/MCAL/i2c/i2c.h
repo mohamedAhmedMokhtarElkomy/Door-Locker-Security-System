@@ -11,7 +11,7 @@
 #ifndef TWI_H_
 #define TWI_H_
 
-#include "std_types.h"
+#include "../../std_types.h"
 /*******************************************************************************
  *                         Definitions                             		       *
  *******************************************************************************/
@@ -28,10 +28,12 @@
  *                      Functions Prototypes                                   *
  *******************************************************************************/
 
-TWI_init();
-TWI_start();
-TWI_stop();
-TWI_writeByte();
-TWI_readByteWithACK();
-TWI_readByteWithNACK();
-TWI_getStatus();
+void TWI_init();
+void TWI_start();
+void TWI_stop();
+void TWI_writeByte();
+uint8 TWI_readByteWithACK();
+uint8 TWI_readByteWithNACK();
+uint8 TWI_getStatus();
+
+#endif

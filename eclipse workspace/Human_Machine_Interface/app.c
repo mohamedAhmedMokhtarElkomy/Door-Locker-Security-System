@@ -22,6 +22,8 @@ void setup(){
 	LCD_init();
 //	KEYPAD_init();
 	UART_init();
+
+	DDRB |= ( 1 << 7);
 }
 
 void readAndSendPassword();
@@ -71,7 +73,6 @@ restart:
 			LCD_moveCursor(1,0);
 			LCD_displayString("passwords");
 		}
-
 		_delay_ms(2000);
 		LCD_clearScreen();
 
@@ -90,7 +91,8 @@ screen:
 	LCD_clearScreen();
 
 	if( key == '+' ){
-		for(int i = 1; i <= 3; i++){
+		response = ' ';
+		while(response != 't'){
 			UART_sendCharacter('+');
 			LCD_displayString("plz enter pass: ");
 			LCD_moveCursor(1,0);
@@ -103,6 +105,12 @@ screen:
 				response = UART_rcvCharacter();
 				LCD_clearScreen();
 				break;
+			}
+
+			if(response == 'b'){
+				LCD_displayString("Alert");
+				PORTB |= ( 1 << 7 );
+//				break;
 			}
 		}
 

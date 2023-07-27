@@ -19,6 +19,7 @@
 
 #define PASSWORD_SIZE 6
 
+static uint8 attempts = 3;
 
 void setup(){
 	UART_init();
@@ -60,8 +61,16 @@ void checkPass(){
 
 	if(strcmp(password, default_pass) == 0)
 		UART_sendCharacter('t');
-	else
-		UART_sendCharacter('f');
+	else{
+		if(attempts == 0){
+			UART_sendCharacter('b');
+			attempts = 3;
+		}
+		else{
+			UART_sendCharacter('f');
+			attempts--;
+		}
+	}
 }
 
 void main(void){
