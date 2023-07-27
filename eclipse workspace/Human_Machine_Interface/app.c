@@ -38,7 +38,6 @@ void main(void){
 
 	_delay_ms(1000); /* delay 1 sec to be sure that both ECU MCU is running */
 
-restart:
 	LCD_clearScreen();
 
 	do{
@@ -78,58 +77,108 @@ restart:
 
 	}while(response == 'f');
 
+	while(1){
+		LCD_clearScreen();
+		LCD_displayString("+ : open door");
+		LCD_moveCursor(1,0);
+		LCD_displayString("- : change pass");
 
-screen:
+		uint8 key = KEYPAD_getPressedKey();
+		_delay_ms(250);/* it needs at least 200ms to work properly*/
+		LCD_clearScreen();
 
-	LCD_clearScreen();
-	LCD_displayString("+ : open door");
-	LCD_moveCursor(1,0);
-	LCD_displayString("- : change pass");
+		if( key == '+' ){
 
-	uint8 key = KEYPAD_getPressedKey();
-	_delay_ms(250);/* it needs at least 200ms to work properly*/
-	LCD_clearScreen();
+			response = 'f';
 
-	if( key == '+' ){
-		response = ' ';
-		while(response != 't'){
-			UART_sendCharacter('+');
-			LCD_displayString("plz enter pass: ");
-			LCD_moveCursor(1,0);
-			readAndSendPassword();
-			LCD_clearScreen();
-
-			response = UART_rcvCharacter();
-			if(response == 't'){
-				LCD_displayString("Motor is moving");
-				response = UART_rcvCharacter();
+			while(response == 'f'){
+				UART_sendCharacter('+');
+				LCD_displayString("plz enter pass: ");
+				LCD_moveCursor(1,0);
+				readAndSendPassword();
 				LCD_clearScreen();
-				break;
+
+				response = UART_rcvCharacter();
+				if(response == 't'){
+					//TODO move the motor
+					LCD_displayString("Motor is moving");
+					response = UART_rcvCharacter();
+					LCD_clearScreen();
+					break;
+				}
+
+				else if(response == 'b'){
+					LCD_displayString("Alert");
+					PORTB |= ( 1 << 7 );//TODO turn on LED
+					//delay 30 sec
+					_delay_ms(3000);
+					PORTB &= ~( 1 << 7 );//TODO turn of LED
+					break;
+				}
 			}
 
-			if(response == 'b'){
-				LCD_displayString("Alert");
-				PORTB |= ( 1 << 7 );
-//				break;
+		}else if( key == '-' ){
+			response = 'f';
+			while(response == 'f'){
+				UART_sendCharacter('-');
+				LCD_displayString("plz enter pass: ");
+				LCD_moveCursor(1,0);
+				readAndSendPassword();
+				response = UART_rcvCharacter();
+
+				LCD_clearScreen();
+				LCD_displayString("correct");
+				_delay_ms(1000);
+				LCD_clearScreen();
+				if(response == 't'){
+					do{
+						UART_sendCharacter('p');
+						LCD_displayString("plz enter pass: ");
+						LCD_moveCursor(1,0);
+						readAndSendPassword();
+						LCD_clearScreen();
+
+						LCD_displayString("plz re-enter the");
+						LCD_moveCursor(1,0);
+						LCD_displayString("same pass:");
+						readAndSendPassword();
+						LCD_clearScreen();
+
+						LCD_displayString("checking password");
+						response = UART_rcvCharacter();
+						LCD_clearScreen();
+
+
+
+						if(response == 't')
+						{
+
+							LCD_displayString("Password Saved");
+							LCD_moveCursor(1,0);
+							LCD_displayString("Successfully");
+						}
+						else if(response == 'f'){
+
+							LCD_displayString("Different");
+							LCD_moveCursor(1,0);
+							LCD_displayString("passwords");
+						}
+						_delay_ms(2000);
+						LCD_clearScreen();
+
+					}while(response == 'f');
+				}
+				else if(response == 'b'){
+					LCD_displayString("Alert");
+					PORTB |= ( 1 << 7 );//TODO turn on LED
+					//delay 30 sec
+					_delay_ms(3000);
+					PORTB &= ~( 1 << 7 );//TODO turn of LED
+					break;
+				}
+				LCD_clearScreen();
 			}
 		}
-
-		if(response == 'f')
-			goto screen;
-	}else if( key == '-' ){
-		for(int i = 1; i <=3; i++){
-			UART_sendCharacter('-');
-			LCD_displayString("-)plz enter pass: ");
-			LCD_moveCursor(1,0);
-			readAndSendPassword();
-			response = UART_rcvCharacter();
-			if(response == 't')
-				break;
-			LCD_clearScreen();
-		}
-		if(response == 'f')
-			goto screen;
-		goto restart;
 	}
 }
 
