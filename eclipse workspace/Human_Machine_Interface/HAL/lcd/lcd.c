@@ -106,7 +106,7 @@ void LCD_displayStringRowColumn(uint8 row, uint8 col, const char *str){
 void LCD_clearScreen(void){
 	LCD_sendCommand(LCD_CMD_CLEAR);
 }
-void LCD_integerToString(int number){
+void LCD_integerToString(uint16 number){
 	char buff[16]; /* String to hold the ascii result */
 	itoa(number,buff,10); /* Use itoa C function to convert the data to its corresponding ASCII value, 10 for decimal */
 	LCD_displayString(buff); /* Display the string */

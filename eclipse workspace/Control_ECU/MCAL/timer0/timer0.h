@@ -41,7 +41,8 @@ void TIMER0_init();
 void TIMER0_start();
 void TIMER0_stop();
 void TIMER0_clear();
-
+void PWM_T0_init();
+void PWM_T0_setDutyCycle(uint8 dutyCycle);
 
 
 #endif /* MCAL_TIMER0_TIMER0_H_ */

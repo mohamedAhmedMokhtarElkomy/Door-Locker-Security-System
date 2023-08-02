@@ -55,7 +55,7 @@ void LCD_displayString(const char *str);
 void LCD_moveCursor(uint8 row, uint8 col);
 void LCD_displayStringRowColumn(uint8 row, uint8 col, const char *str);
 void LCD_clearScreen(void);
-void LCD_integerToString(int number);
+void LCD_integerToString(uint16 number);
 void LCD_floatToString(float number);
 
 #endif /* LCD_H_ */

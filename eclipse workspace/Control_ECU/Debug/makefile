@@ -13,6 +13,7 @@ RM := rm -rf
 -include MCAL/i2c/subdir.mk
 -include MCAL/gpio/subdir.mk
 -include HAL/dc_motor/subdir.mk
+-include HAL/buzzer/subdir.mk
 -include subdir.mk
 -include objects.mk
 

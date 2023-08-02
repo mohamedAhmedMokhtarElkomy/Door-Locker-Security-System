@@ -19,31 +19,30 @@ void DcMotor_init(DcMotor_configType *dcMotor){
 	GPIO_setupPinDirection(dcMotor->port1_id, dcMotor->pin1_id, PIN_OUTPUT);
 	GPIO_setupPinDirection(dcMotor->port2_id, dcMotor->pin2_id, PIN_OUTPUT);
 
-//	PWM_T0_init();
+	PWM_T0_init();
 
 }
 void DcMotor_rotate(DcMotor_configType *dcMotor, DcMotor_state state, uint8 speedPercentage){
 
-//	PWM_T0_setDutyCycle(speedPercentage);
+	PWM_T0_setDutyCycle(speedPercentage);
 
 	switch(state){
-	case EN_DC_STOP:
-		GPIO_writePin(dcMotor->port1_id, dcMotor->pin1_id, LOGIC_LOW);
-		GPIO_writePin(dcMotor->port2_id, dcMotor->pin2_id, LOGIC_LOW);
+		case EN_DC_CW:
+			GPIO_writePin(dcMotor->port1_id, dcMotor->pin1_id, LOGIC_HIGH);
+			GPIO_writePin(dcMotor->port2_id, dcMotor->pin2_id, LOGIC_LOW);
 
-		break;
+			break;
 
-	case EN_DC_CW:
-		GPIO_writePin(dcMotor->port1_id, dcMotor->pin1_id, LOGIC_HIGH);
-		GPIO_writePin(dcMotor->port2_id, dcMotor->pin2_id, LOGIC_LOW);
+		case EN_DC_A_CW:
+			GPIO_writePin(dcMotor->port1_id, dcMotor->pin1_id, LOGIC_LOW);
+			GPIO_writePin(dcMotor->port2_id, dcMotor->pin2_id, LOGIC_HIGH);
 
-		break;
-
-	case EN_DC_A_CW:
-		GPIO_writePin(dcMotor->port1_id, dcMotor->pin1_id, LOGIC_LOW);
-		GPIO_writePin(dcMotor->port2_id, dcMotor->pin2_id, LOGIC_HIGH);
-
-		break;
+			break;
 	}
+}
+
+void DcMotor_stop(DcMotor_configType *dcMotor){
+	GPIO_writePin(dcMotor->port1_id, dcMotor->pin1_id, LOGIC_LOW);
+	GPIO_writePin(dcMotor->port2_id, dcMotor->pin2_id, LOGIC_LOW);
 }
 

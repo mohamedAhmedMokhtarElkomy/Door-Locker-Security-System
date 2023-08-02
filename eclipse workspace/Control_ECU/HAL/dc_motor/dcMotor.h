@@ -28,6 +28,6 @@ typedef struct
 
 void DcMotor_init(DcMotor_configType *dcMotor);
 void DcMotor_rotate(DcMotor_configType *dcMotor, DcMotor_state state, uint8 speed);
-
+void DcMotor_stop(DcMotor_configType *dcMotor);
 
 #endif /* ECUAL_DCMOTOR_DCMOTOR_H_ */

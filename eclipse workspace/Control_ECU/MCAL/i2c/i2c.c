@@ -28,16 +28,16 @@
 
 void TWI_init(){
 
-	//TODO make TWBR dynamic
+	TWSR = 0x00; /* set Prescaler and clear old status*/
+
 	/* Bit Rate: 400.000 kbps using zero pre-scaler TWPS=00 and F_CPU=8Mhz */
-	TWBR = 0x02;
-	TWSR = 0x00;
+	TWBR = BITRATE(TWSR); /* set baud rate */
 
 	/* Two Wire Bus address my address if any master device want to call me: 0x1 (used in case this MC is a slave device)
    	   General Call Recognition: Off */
 	TWAR = 0b00000010; // my address = 0x01 address from BIT 7..1
 
-	TWCR = (1 << TWINT) | ( TWEN << 1);
+//	TWCR = ( TWEN << 1);
 
 }
 void TWI_start(){
@@ -48,10 +48,23 @@ void TWI_start(){
 
 void TWI_stop(){
 	TWCR = (1 << TWINT) | ( TWSTO << 1) | ( TWEN << 1);
+	while( BIT_IS_CLEAR(TWCR, TWINT) ); //wait until TWI finish its process
+
 }
-void TWI_writeByte(){}
-uint8 TWI_readByteWithACK(){}
-uint8 TWI_readByteWithNACK(){}
+void TWI_writeByte(uint8 data)
+{
+    TWDR = data;
+    TWCR = (1 << TWINT) | (1 << TWEN);
+    while(BIT_IS_CLEAR(TWCR,TWINT));
+}
+uint8 TWI_readByteWithACK(){
+   TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
+	while(BIT_IS_CLEAR(TWCR,TWINT));
+	return TWDR;
+}
+uint8 TWI_readByteWithNACK(){
+	return 1;
+}
 
 uint8 TWI_getStatus(){
 	return ( TWSR & 0xF8 );
