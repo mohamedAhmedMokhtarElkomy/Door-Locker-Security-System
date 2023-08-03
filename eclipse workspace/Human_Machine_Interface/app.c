@@ -26,39 +26,30 @@
 ST_timer1_configType timer1_configType = {TIMER1_MAX_VALUE - TIMER1_ONE_SECOND_CLK_256_8M, TIMER1_MAX_VALUE, TIMER1_CLK_256, TIMER1_NORMAL};
 
 uint16 seconds = 0;
-uint8 timeFlag = 0;
 
 void handleTimer_callBack(){
 	if(seconds > 0)
 		seconds--;
-	else
-		timeFlag = 1;
 
 }
 
 void setup(){
-
+	//	KEYPAD_init();
 
 	LCD_init();
-//	KEYPAD_init();
 	UART_init();
-//	Timer1_init(&timer1_configType);
-//	Timer1_setCallBack(&handleTimer_callBack);
-//	SREG  |= (1<<7);                    // Enable interrupts by setting I-bit
+	Timer1_init(&timer1_configType);
+	Timer1_setCallBack(&handleTimer_callBack);
+	SREG  |= (1<<7);                    // Enable interrupts by setting I-bit
 }
-
-
-
-
 
 void readAndSendPassword();
 void changePass();
+uint8 checkPass(uint8 key);
 
 void main(void){
 
 	setup();
-
-	uint8 response = 'w';
 
 	LCD_displayString("System loading...");
 	LCD_moveCursor(1,0);
@@ -80,94 +71,30 @@ void main(void){
 		LCD_clearScreen();
 
 		if( key == '+' ){
-
-			response = 'f';
-
-			while(response == 'f'){
-				UART_sendCharacter('+');
-				LCD_displayString("plz enter pass: ");
-				LCD_moveCursor(1,0);
-				readAndSendPassword();
-				response = UART_rcvCharacter();
+			if( checkPass('+') == 1){
+				//TODO run motor
+				LCD_displayString("Unlocking Door");
+				//TODO delay here
+				UART_rcvCharacter();
 				LCD_clearScreen();
-
-				if(response == 'b'){
-					LCD_displayString("ERROR");
-					seconds = 60;
-					break;
-				}
-				else if(response == 't'){
-					LCD_displayString("Motor is moving");
-					//TODO delay here
-					response = UART_rcvCharacter();
-					LCD_clearScreen();
-					break;
-				}
-			}
-
-		}else if( key == '-' ){
-			response = 'f';
-			while(response == 'f'){
-				UART_sendCharacter('-');
-				LCD_displayString("plz enter pass: ");
-				LCD_moveCursor(1,0);
-				readAndSendPassword();
+				LCD_displayString("Hold Door");
+				UART_rcvCharacter();
 				LCD_clearScreen();
-
-				response = UART_rcvCharacter();
-
-				if(response == 'b'){
-					LCD_clearScreen();
-					LCD_displayString("ERROR");
-					UART_rcvCharacter();
-					break;
-				}
-				else if(response == 't'){
-					LCD_displayString("correct");
-					_delay_ms(1000);
-					LCD_clearScreen();
-					do{
-						UART_sendCharacter('p');
-						LCD_displayString("plz enter pass: ");
-						LCD_moveCursor(1,0);
-						readAndSendPassword();
-						LCD_clearScreen();
-
-						LCD_displayString("plz re-enter the");
-						LCD_moveCursor(1,0);
-						LCD_displayString("same pass:");
-						readAndSendPassword();
-						LCD_clearScreen();
-
-						LCD_displayString("checking password");
-						response = UART_rcvCharacter();
-						LCD_clearScreen();
-
-						if(response == 't')
-						{
-
-							LCD_displayString("Password Saved");
-							LCD_moveCursor(1,0);
-							LCD_displayString("Successfully");
-						}
-						else if(response == 'f'){
-
-							LCD_displayString("Different");
-							LCD_moveCursor(1,0);
-							LCD_displayString("passwords");
-						}
-						_delay_ms(2000);
-						LCD_clearScreen();
-
-					}while(response == 'f');
-					LCD_clearScreen();
-				}
+				LCD_displayString("Locking Door");
+				UART_rcvCharacter();
+				LCD_clearScreen();
 			}
+		}
+		else if( key == '-' ){
+			if( checkPass('-') == 1){
+				LCD_displayString("correct");
+				_delay_ms(1000);
+				LCD_clearScreen();
+				changePass();
 
+			}
 		}
 	}
-
-
 }
 
 
@@ -191,10 +118,10 @@ void readAndSendPassword(){
 	}
 
 	UART_sendArray(password, PASSWORD_SIZE); /*TODO UART should not used in app layer*/
-
 }
 
 void changePass(){
+
 
 	uint8 response = 'w';
 
@@ -235,3 +162,38 @@ void changePass(){
 
 		}while(response == 'f');
 }
+
+uint8 checkPass(uint8 key){
+
+	uint8 response = 'w';
+
+	do{
+		UART_sendCharacter(key);
+		LCD_displayString("plz enter pass: ");
+		LCD_moveCursor(1,0);
+		readAndSendPassword();
+		response = UART_rcvCharacter();
+		LCD_clearScreen();
+
+		if(response == 'b'){
+			LCD_displayString("ERROR");
+			seconds = 60;/* wait here for 60 seconds */
+			while(seconds > 0){
+				LCD_clearScreen();
+				LCD_displayString("ERROR");
+				LCD_moveCursor(1,0);
+				LCD_integerToString(seconds);
+				_delay_ms(250);
+
+			}
+			break;
+		}
+		else if(response == 't'){
+			return 1;
+		}
+	}while(response == 'f');
+
+	return 0;
+}
+
+

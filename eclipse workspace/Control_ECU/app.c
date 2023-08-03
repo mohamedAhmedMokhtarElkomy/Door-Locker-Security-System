@@ -26,7 +26,7 @@
 
 static uint8 attempts = 2;
 
-DcMotor_configType dcMotor = { PORTB_ID, PORTB_ID, PIN4_ID, PIN5_ID };
+ST_dcMotor_configType dcMotor = { PORTB_ID, PORTB_ID, PIN4_ID, PIN5_ID };
 
 void setup(){
 	UART_init();
@@ -114,10 +114,16 @@ void main(void){
 			if(result == 1){
 				DcMotor_rotate(&dcMotor, EN_DC_CW, 100);
 				_delay_ms(15000);
+				UART_sendCharacter(' ');
+
 				DcMotor_stop(&dcMotor);
 				_delay_ms(3000);
+				UART_sendCharacter(' ');
+
 				DcMotor_rotate(&dcMotor, EN_DC_A_CW, 100);
 				_delay_ms(15000);
+				UART_sendCharacter(' ');
+
 				DcMotor_stop(&dcMotor);
 
 				UART_sendCharacter(' ');

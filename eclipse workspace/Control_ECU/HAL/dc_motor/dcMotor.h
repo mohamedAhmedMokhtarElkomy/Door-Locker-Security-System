@@ -15,7 +15,7 @@
 
 typedef enum{
 	EN_DC_STOP, EN_DC_CW, EN_DC_A_CW
-}DcMotor_state;
+}EN_dcMotor_state;
 
 typedef struct
 {
@@ -24,10 +24,10 @@ typedef struct
 	uint8 pin1_id;
 	uint8 pin2_id;
 
-}DcMotor_configType;
+}ST_dcMotor_configType;
 
-void DcMotor_init(DcMotor_configType *dcMotor);
-void DcMotor_rotate(DcMotor_configType *dcMotor, DcMotor_state state, uint8 speed);
-void DcMotor_stop(DcMotor_configType *dcMotor);
+void DcMotor_init(ST_dcMotor_configType *dcMotor);
+void DcMotor_rotate(ST_dcMotor_configType *dcMotor, EN_dcMotor_state state, uint8 speed);
+void DcMotor_stop(ST_dcMotor_configType *dcMotor);
 
 #endif /* ECUAL_DCMOTOR_DCMOTOR_H_ */

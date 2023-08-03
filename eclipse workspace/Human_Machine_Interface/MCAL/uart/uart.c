@@ -34,7 +34,7 @@ void UART_init(){
 
 	SET_BIT(UCSRA, U2X);		/* : Double the USART Transmission Speed */
 
-	SET_BIT(UCSRB, RXCIE);		/* RX Complete Interrupt Enable */
+//	SET_BIT(UCSRB, RXCIE);		/* RX Complete Interrupt Enable */
 	SET_BIT(UCSRB, TXEN);		/* Transmitter Enable*/
 	SET_BIT(UCSRB, RXEN);		/* Receiver Enable */
 
