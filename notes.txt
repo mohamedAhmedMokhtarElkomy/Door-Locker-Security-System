@@ -15,3 +15,33 @@ why in keypad 4*4 write pins as an output at each read?
 add backspace
 
 sending 'p' skip the '-' should check password for first time
+
+
+
+
+
+
+
+
+
+# Door Locker Security System
+Door Locker Security System is a system to unlock a door using a password
+
+# Drivers 
+ MCAL
+  GPIO
+  I2C
+  TIMER
+  UART
+ HAL
+  LCD
+  DC_MOTOR
+  EEPROM
+  BUZZER
+# Project
+ is divided into to MCU's 
+ HMI_ECU is just responsible interaction with the user just take inputs through keypad and display 
+ messages on the LCD.
+
+ CONTROL_ECU is responsible for all the processing and decisions in the system like password 
+ checking, open the door and activate the system alarm.
