@@ -33,6 +33,9 @@ void setup(){
 	Buzzer_init();
 	DcMotor_init(&dcMotor);
 	TWI_init();
+	TWI_start();
+	TWI_writeByte("t");
+	TWI_stop();
 
 }
 

@@ -28,6 +28,8 @@
 
 void TWI_init(){
 
+	TWAR = 0b00000010; // my address = 0x01 address from BIT 7..1
+
 	TWSR = 0x00; /* set Prescaler and clear old status*/
 
 	/* Bit Rate: 400.000 kbps using zero pre-scaler TWPS=00 and F_CPU=8Mhz */
@@ -35,19 +37,19 @@ void TWI_init(){
 
 	/* Two Wire Bus address my address if any master device want to call me: 0x1 (used in case this MC is a slave device)
    	   General Call Recognition: Off */
-	TWAR = 0b00000010; // my address = 0x01 address from BIT 7..1
 
-//	TWCR = ( TWEN << 1);
+
+//	TWCR = ( 1 << TWEN);
 
 }
 void TWI_start(){
 
-	TWCR = (1 << TWINT) | ( TWSTA << 1) | ( TWEN << 1);
+	TWCR = (1 << TWINT) | ( 1 << TWSTA) | ( 1 << TWEN);
 	while( BIT_IS_CLEAR(TWCR, TWINT) ); //wait until TWI finish its process
 }
 
 void TWI_stop(){
-	TWCR = (1 << TWINT) | ( TWSTO << 1) | ( TWEN << 1);
+	TWCR = (1 << TWINT) | ( 1 << TWSTO ) | ( 1 << TWEN);
 	while( BIT_IS_CLEAR(TWCR, TWINT) ); //wait until TWI finish its process
 
 }
