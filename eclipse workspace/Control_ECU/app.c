@@ -29,9 +29,10 @@
 static uint8 attempts = 2;
 
 ST_dcMotor_configType dcMotor = { PORTB_ID, PORTB_ID, PIN4_ID, PIN5_ID };
+ST_uart_ConfigType uart_configType = {BITS_EIGHT, PARITY_DISABLE, STOP_ONE_BIT, BAUD_9600};
 
 void setup(){
-	UART_init();
+	UART_init(&uart_configType);
 	Buzzer_init();
 	DcMotor_init(&dcMotor);
 	TWI_init();

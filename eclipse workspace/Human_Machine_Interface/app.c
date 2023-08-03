@@ -24,6 +24,7 @@
 
 
 ST_timer1_configType timer1_configType = {TIMER1_MAX_VALUE - TIMER1_ONE_SECOND_CLK_256_8M, TIMER1_MAX_VALUE, TIMER1_CLK_256, TIMER1_NORMAL};
+ST_uart_ConfigType uart_configType = {BITS_EIGHT, PARITY_DISABLE, STOP_ONE_BIT, BAUD_9600};
 
 uint16 seconds = 0;
 
@@ -37,7 +38,7 @@ void setup(){
 	//	KEYPAD_init();
 
 	LCD_init();
-	UART_init();
+	UART_init(&uart_configType);
 	Timer1_init(&timer1_configType);
 	Timer1_setCallBack(&handleTimer_callBack);
 	SREG  |= (1<<7);                    // Enable interrupts by setting I-bit
