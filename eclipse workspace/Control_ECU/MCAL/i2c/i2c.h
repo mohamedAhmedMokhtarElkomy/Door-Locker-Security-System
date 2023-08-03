@@ -25,16 +25,16 @@
 
 #define BITRATE(TWSR) 0x02
 
-#define START_STATE				0x08
-#define	REPEATED_START_STATE	0x10
-#define	SLA_W_ACK_STATE			0x18
-#define SLA_W_NACK_STATE		0x20
-#define SLA_R_ACK_STATE			0x40
-#define SLA_R_NACK_STATE		0x48
-#define	DATA_WRITE_ACK_STATE	0x28
-#define DATA_WRITE_NACK_STATE	0x30
-#define DATA_READ_ACK_STATE		0x50
-#define DATA_READ_NACK_STATE	0x58
+#define TWI_START_STATE				0x08
+#define	TWI_REPEATED_START_STATE	0x10
+#define	TWI_SLA_W_ACK_STATE			0x18
+#define TWI_SLA_W_NACK_STATE		0x20
+#define TWI_SLA_R_ACK_STATE			0x40
+#define TWI_SLA_R_NACK_STATE		0x48
+#define	TWI_DATA_WRITE_ACK_STATE	0x28
+#define TWI_DATA_WRITE_NACK_STATE	0x30
+#define TWI_DATA_READ_ACK_STATE		0x50
+#define TWI_DATA_READ_NACK_STATE	0x58
 
 /*******************************************************************************
  *                         Types Declaration                                   *

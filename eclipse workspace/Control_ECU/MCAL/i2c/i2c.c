@@ -50,7 +50,7 @@ void TWI_start(){
 
 void TWI_stop(){
 	TWCR = (1 << TWINT) | ( 1 << TWSTO ) | ( 1 << TWEN);
-	while( BIT_IS_CLEAR(TWCR, TWINT) ); //wait until TWI finish its process
+//	while( BIT_IS_CLEAR(TWCR, TWINT) ); //wait until TWI finish its process
 
 }
 void TWI_writeByte(uint8 data)
@@ -65,7 +65,9 @@ uint8 TWI_readByteWithACK(){
 	return TWDR;
 }
 uint8 TWI_readByteWithNACK(){
-	return 1;
+	TWCR = (1 << TWINT) | (1 << TWEN);
+	while(BIT_IS_CLEAR(TWCR,TWINT));
+	return TWDR;
 }
 
 uint8 TWI_getStatus(){
