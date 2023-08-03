@@ -96,10 +96,10 @@ uint8 checkPass(){
 
 void main(void){
 
-	TWI_start();
-
-	TWI_writeByte(0x10);
-	TWI_stop();
+//	TWI_start();
+//
+//	TWI_writeByte(0x10);
+//	TWI_stop();
 
 	uint8 response = 0;
 

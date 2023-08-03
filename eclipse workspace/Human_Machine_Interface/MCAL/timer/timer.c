@@ -14,7 +14,10 @@
  *                          Private Variables                                  *
  *******************************************************************************/
 uint16 tcnt1_value = 0 ; /* To store TCNT1 value from configPtr in init function */
+uint8 seconds_count = 0;
+
 void (*callBackFunction)();
+
 
 /*******************************************************************************
  *                          Global Variables                                   *
@@ -43,7 +46,12 @@ void Timer1_init(const ST_timer1_configType * Config_Ptr){
 
 
 }
-void Timer1_deInit(void){return;}
+void Timer1_deInit(void){
+	TCNT1 = 0;
+	TCCR1A = 0;
+	TCCR1B = 0;
+	CLEAR_BIT(TIMSK, TOIE1);
+}
 void Timer1_setCallBack(void(*a_ptr)(void)){
 
 	callBackFunction = a_ptr;
