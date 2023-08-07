@@ -24,14 +24,13 @@
 
 
 ST_timer1_configType timer1_configType = {TIMER1_MAX_VALUE - TIMER1_ONE_SECOND_CLK_256_8M, TIMER1_MAX_VALUE, TIMER1_CLK_256, TIMER1_NORMAL};
-ST_uart_ConfigType uart_configType = {BITS_EIGHT, PARITY_DISABLE, STOP_ONE_BIT, BAUD_9600};
+ST_uart_ConfigType uart_configType = {UART_BITS_EIGHT, UART_PARITY_DISABLE, UART_STOP_ONE_BIT, BAUD_9600, UART_U2X_ENABLE, UART_INT_TX_DISABLE, UART_INT_RX_DISABLE};
 
 uint16 seconds = 0;
 
 void handleTimer_callBack(){
 	if(seconds > 0)
 		seconds--;
-
 }
 
 void setup(){

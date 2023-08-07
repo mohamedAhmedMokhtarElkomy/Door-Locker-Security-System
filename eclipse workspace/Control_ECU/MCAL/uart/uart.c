@@ -4,58 +4,78 @@
  *
  * File Name: uart.c
  *
+ * Description: Universal Asynchronous Receiver/Transmitter driver
+ *
  * Author: Mohamed Ahmed Mokhtar
  *
+ * Github: mohamedAhmedMokhtarElkomy
+ *
  *******************************************************************************/
-#include "uart.h"
 
+#include "uart.h"
 #include "avr/io.h"
 #include <avr/interrupt.h>
 
 /*******************************************************************************
- *                          Global Variables                                   *
+ *                                 Definitions                                 *
  *******************************************************************************/
-volatile uint8 g_uartRcvData = 'z';
 
 
 /*******************************************************************************
- *                          ISR's Definitions                                  *
+ *                              Global Variables                               *
+ *******************************************************************************/
+
+volatile uint8 g_uart_data;
+
+/*******************************************************************************
+ *                              Private Variables                              *
+ *******************************************************************************/
+
+void (*transmitionCallBackFunction)(void);
+void (*receiveCallBackFunction)(void);
+
+
+/*******************************************************************************
+ *                              ISR's Definitions                              *
  *******************************************************************************/
 ISR(USART_RXC_vect){
-	g_uartRcvData = UDR;
+	g_uart_data = UDR;
+    (*receiveCallBackFunction)();
 }
 
-/*******************************************************************************
- *                          Functions Definitions                              *
+ISR(USART_TXC_vect){
+	(*transmitionCallBackFunction)();
+}
+
+ /*******************************************************************************
+ *                            Functions Definitions                            *
  *******************************************************************************/
 void UART_init(ST_uart_ConfigType *configType){
 
-	uint16 ubrr_value = 0;
+    uint16 ubrr_value = 0;
 
-	//	SET_BIT(UCSRB, RXCIE);		/* RX Complete Interrupt Enable */
+	UCSRA |= ( configType->u2x << U2X); 					/* Enable Double the USART Transmission Speed */
 
+	UCSRB |= ( 1 << TXEN );									/* Transmitter Enable*/
+	UCSRB |= ( 1 << RXEN );									/* Receiver Enable */
+	UCSRB |= ( configType-> receiveInterrupt << RXCIE);		/* RX Complete Interrupt Enable */
+	UCSRB |= ( configType-> transmitInterrupt << TXCIE);	/* TX Complete Interrupt Enable */
 
-	SET_BIT(UCSRB, TXEN);		/* Transmitter Enable*/
-	SET_BIT(UCSRB, RXEN);		/* Receiver Enable */
-
-	CLEAR_BIT(UCSRC, UMSEL);	/* USART Mode Select 0 -> async, 1 -> sync*/
-
-	UCSRC |= ( configType->bit_data << UCSZ0 ); /* configure number of bits to be send, UCSZ1:0: 11 -> 8-bit */ /* will not work with 9-bits because UCSZ2 not in UCSRC */
-	UCSRC |= ( configType->parity << UPM0 );	/* configure parity bits */
-	UCSRC |= ( configType->stop_bit << USBS );
-
-#if(U2X_ENABLE == 1)
-	SET_BIT(UCSRA, U2X);		/* : Double the USART Transmission Speed */
-	ubrr_value = (uint16) calcluateBaudRateU2X(configType->baud_rate);
-
-#else
-	ubrr_value = (uint16) calcluateBaudRateU2X(configType->baud_rate * 2);
-#endif
-//	ubrr_value = (uint16)(( F_CPU / ( BAUDRATE * 8UL )) - 1 );
+	UCSRC |= ( configType->bit_data << UCSZ0 ); 			/* configure number of bits to be send, UCSZ1:0: 11 -> 8-bit */ /* will not work with 9-bits because UCSZ2 not in UCSRC */
+	UCSRC |= ( configType->parity << UPM0 );				/* configure parity bits */
+	UCSRC |= ( configType->stop_bit << USBS );				/* configure stop bits */
 
 
-	UBRRH = (ubrr_value >> 8) & (0x0F);
-	UBRRL = ubrr_value;
+
+	if(configType->u2x == UART_U2X_ENABLE)
+		ubrr_value = (uint16) CALCULATE_BAUD_RATE(configType->baud_rate);
+	else
+		ubrr_value = (uint16) CALCULATE_BAUD_RATE(configType->baud_rate * 2);
+
+//	UBRRH = (ubrr_value >> 8) & (0x0F);
+	UBRRH = (uint8)(ubrr_value >> 8);
+	UBRRL = (uint8) ubrr_value;
+
 }
 
 void UART_sendCharacter(uint8 data){
@@ -77,3 +97,10 @@ uint8 UART_rcvCharacter(){
 	return UDR;
 }
 
+void UART_int_rx_callBack(void (*callBackFunction)(void)){
+	receiveCallBackFunction = callBackFunction;
+}
+
+void UART_int_tx_callBack(void (*callBackFunction)(void)){
+    transmitionCallBackFunction = callBackFunction;
+}
