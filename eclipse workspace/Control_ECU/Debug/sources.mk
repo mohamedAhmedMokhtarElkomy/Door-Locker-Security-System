@@ -24,6 +24,7 @@ HAL/dc_motor \
 HAL/eeprom \
 MCAL/gpio \
 MCAL/i2c \
+MCAL/timer \
 MCAL/timer0 \
 MCAL/uart \
 . \

@@ -9,9 +9,11 @@
 
 #include "MCAL/uart/uart.h"
 #include "MCAL/i2c/i2c.h"
+#include "MCAL/timer/timer.h"
 #include "HAL/buzzer/buzzer.h"
 #include "HAL/dc_motor/dcMotor.h"
 #include "HAL/eeprom/eeprom.h"
+
 
 #include <string.h>
 #include "avr/io.h"
@@ -30,12 +32,27 @@ static uint8 attempts = 2;
 
 ST_dcMotor_configType dcMotor = { PORTB_ID, PORTB_ID, PIN4_ID, PIN5_ID };
 ST_uart_ConfigType uart_configType = {BITS_EIGHT, PARITY_DISABLE, STOP_ONE_BIT, BAUD_9600};
+ST_timer1_configType timer1_configType = {TIMER1_MAX_VALUE - TIMER1_ONE_SECOND_CLK_256_8M, TIMER1_MAX_VALUE, TIMER1_CLK_256, TIMER1_NORMAL};
+
+static uint8 seconds = 0;
+
+void secondsCountDown(){
+	if (seconds > 0)
+		seconds--;
+}
+
 
 void setup(){
+
+
 	UART_init(&uart_configType);
 	Buzzer_init();
 	DcMotor_init(&dcMotor);
 	TWI_init();
+	Timer1_init(&timer1_configType);
+	Timer1_setCallBack(&secondsCountDown);
+	SREG  |= (1<<7);                    // Enable interrupts by setting I-bit
+
 
 }
 
@@ -57,19 +74,21 @@ void main(void){
 			result = checkPass();
 			if(result == 1){
 				DcMotor_rotate(&dcMotor, EN_DC_CW, 100);
-				_delay_ms(15000);
+				seconds = 15;
+				while(seconds > 0){};
 				UART_sendCharacter(' ');
 
 				DcMotor_stop(&dcMotor);
-				_delay_ms(3000);
+				seconds = 3;
+				while(seconds > 0){};
 				UART_sendCharacter(' ');
 
 				DcMotor_rotate(&dcMotor, EN_DC_A_CW, 100);
-				_delay_ms(15000);
+				seconds = 15;
+				while(seconds > 0){};
+
 				UART_sendCharacter(' ');
-
 				DcMotor_stop(&dcMotor);
-
 				UART_sendCharacter(' ');
 
 			}
@@ -100,7 +119,6 @@ void rcvPassword(uint8* str){
 		}
 		index++;
 	}
-
 }
 void changePass(){
 
@@ -109,10 +127,9 @@ void changePass(){
 	rcvPassword(password);
 	rcvPassword(rePassword);
 
-
 	if(strcmp(password, rePassword) == 0){
 		for(int i = 0; i < 6; i++){
-			EEPROM_writeByte(0x0311+i, password[i]); /* Write 0x0F in the external EEPROM */
+			EEPROM_writeByte(0x0311+i, password[i]);
 			_delay_ms(10);
 		}
 		UART_sendCharacter('t');
@@ -143,8 +160,8 @@ uint8 checkPass(){
 		if(attempts == 0){
 			UART_sendCharacter('b');
 			Buzzer_on();
-			//TODO delay 1 min
-			_delay_ms(5000);
+			seconds = 60;
+			while(seconds > 0){};
 			Buzzer_off();
 			UART_sendCharacter('b');
 			attempts = 2;
@@ -153,7 +170,6 @@ uint8 checkPass(){
 			UART_sendCharacter('f');
 			attempts--;
 		}
-
 		return 0;
 	}
 }

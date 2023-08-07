@@ -34,7 +34,7 @@ void UART_init(ST_uart_ConfigType *configType){
 
 	//	SET_BIT(UCSRB, RXCIE);		/* RX Complete Interrupt Enable */
 
-	SET_BIT(UCSRA, U2X);		/* : Double the USART Transmission Speed */
+
 	SET_BIT(UCSRB, TXEN);		/* Transmitter Enable*/
 	SET_BIT(UCSRB, RXEN);		/* Receiver Enable */
 
@@ -45,7 +45,9 @@ void UART_init(ST_uart_ConfigType *configType){
 	UCSRC |= ( configType->stop_bit << USBS );
 
 #if(U2X_ENABLE == 1)
+	SET_BIT(UCSRA, U2X);		/* : Double the USART Transmission Speed */
 	ubrr_value = (uint16) calcluateBaudRateU2X(configType->baud_rate);
+
 #else
 	ubrr_value = (uint16) calcluateBaudRateU2X(configType->baud_rate * 2);
 #endif
